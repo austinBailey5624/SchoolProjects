@@ -1,0 +1,125 @@
+/**
+*	@file: 		Stack.h
+*	@author:	Austin Bailey
+*	@date:		2.27.2015
+*	@purpose:	Header file for the Stack class
+*/
+#ifndef STACK_H
+#define STACK_H
+#include "StackInterface.h"
+#include "Node.h"
+template <typename T>
+class Stack: public StackInterface<T>
+{
+	public:
+		/**
+		* @pre: none
+		* @post: none
+		* @return: returns an instance of Stack with m_top set to nullptr and size set to 0
+		*/
+		Stack();
+		
+		/**
+		* @pre: An instance of the Stack class that needs to be deleted
+		* @post: A void where the instance once was
+		* @return: nothing
+		*/
+		~Stack();
+	
+		/**
+		* @pre: Instance of the stack class
+		* @post: does not change values, const
+		* @return: returns true if size=0, false else
+		*/
+		bool isEmpty() const;
+
+		/**
+		* @pre: Instance of the stack class
+		* @post: const
+		* @return: returns an instance of Stack with m_top set to nullptr and size set to 0
+		*/
+		void push(const T newEntry);
+	
+		/**
+		* @pre: Instance of the Stack Class 
+		* @post: removed top node
+		* @return: value of removed node
+		*/
+		T pop() throw(PVE);
+
+		/**
+		* @pre: Instance of the Stack Class 
+		* @post: const
+		* @return: the value of the top node of the class
+		*/	
+		T peek() const throw(PVE);
+		
+		/**
+		* @pre: instance of Stack Class 
+		* @post: const
+		* @return: size of Stack
+		*/
+		int size() const;
+
+		/**
+		* @pre: Instance of Stack Class 
+		* @post: const
+		* @return:void 
+		*/
+		void print() const;
+
+		/**
+		* @pre: Two stack interfaces
+		* @post: const
+		* @return: true if lhs is < rhs
+		*/
+		bool operator<(const StackInterface<T>& rhs)const;
+
+		/**
+		* @pre: Two Stack Interfaces 
+		* @post: const
+		* @return: true if lhs <= rhs
+		*/
+		bool operator<=(const StackInterface<T>& rhs)const;
+
+		/**
+		* @pre: Two Stack Interfaces
+		* @post: const
+		* @return: true if lhs > rhs
+		*/
+		bool operator>(const StackInterface<T>& rhs)const;
+
+		/**
+		* @pre: Two Stack Interfaces 
+		* @post: const
+		* @return:true if lhs>=rhs
+		*/
+		bool operator>=(const StackInterface<T>& rhs)const;
+
+		/**
+		* @pre: Two Stack Interfaces 
+		* @post: Const
+		* @return:true if lhs(size)==rhs(size)
+		*/
+		bool operator==(const StackInterface<T>& rhs)const;
+
+		/**
+		* @pre: Two Stack Interfaces
+		* @post: cosnt
+		* @return: true if lhs(size)!=rhs(size)
+		*/
+		bool operator!=(const StackInterface<T>& rhs)const;
+
+		/**
+		* @pre: Stack instance
+		* @post: cosnt
+		* @return: pointer to Top of stack
+		*/
+		Node<T>* getTop()const;
+
+	private:
+		int m_size;
+		Node<T>* m_top;
+};
+#include "Stack.hpp"
+#endif

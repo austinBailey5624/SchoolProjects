@@ -1,0 +1,230 @@
+/**
+*	@file: 		DoubleLinkedList.hpp
+*	@author:	Austin Bailey
+*	@date:		2.13.2015
+*	@purpose:	implementation file for LinkedList class
+*/
+//in hpp do not include header
+#include <iostream>
+#include <string>
+#include <stdexcept>
+template <typename T>
+DoubleLinkedList<T>::DoubleLinkedList()
+{
+	this->m_front=nullptr;
+	this->m_back=nullptr;
+	this->m_size=0;
+}
+
+template <typename T>
+DoubleLinkedList<T>::~DoubleLinkedList()
+{
+	Node<T>* deleter = new Node<T>;
+	delete deleter;
+	//deleter=m_front->getPrevious()
+	while(m_front->getPrevious()!=nullptr)
+	{
+		deleter=m_front;
+		m_front = m_front->getPrevious();
+		delete deleter;
+	}
+}
+
+template <typename T>
+bool DoubleLinkedList<T>::isEmpty()const
+{
+	return(m_size==0);
+}
+
+template <typename T>
+int DoubleLinkedList<T>::size()const
+{
+	return this->m_size;
+}
+
+template <typename T>
+void DoubleLinkedList<T>::pushFront(T value)
+{
+	Node<T>* ptr = new Node<T>;
+
+	if(m_size==0)
+	{
+		m_front=ptr;
+		m_back=ptr;
+		ptr->setValue(value);
+		ptr->setPrevious(nullptr);
+		ptr->setNext(nullptr);
+		m_size++;
+	}
+	else
+	{
+		ptr->setValue(value);
+		ptr->setPrevious(m_front);
+		m_front=ptr;
+		ptr->setNext(nullptr);
+		ptr->getPrevious()->setNext(ptr);
+		m_size++;
+	}
+}
+
+template <typename T>
+void DoubleLinkedList<T>::pushBack(T value)
+{
+	Node<T>* ptr = new Node<T>;
+
+	if(m_size==0)
+	{
+		m_front=ptr;
+		m_back=ptr;
+		ptr->setValue(value);
+		ptr->setPrevious(nullptr);
+		ptr->setNext(nullptr);
+		m_size++;
+	}
+	else
+	{
+		ptr->setValue(value);
+		ptr->setNext(m_back);
+		m_back=ptr;
+		ptr->setPrevious(nullptr);
+		ptr->getNext()->setPrevious(ptr);
+		m_size++;
+	}
+}
+
+template <typename T>
+bool DoubleLinkedList<T>::remove(T value)throw(std::runtime_error)
+{
+	Node<T>* tempNode = new Node<T>;
+	tempNode = find(value);
+
+	if(tempNode==nullptr)
+	{
+		throw(std::runtime_error("value not in list"));
+		return false;
+	}
+	if(tempNode->getPrevious()==nullptr&&tempNode->getNext()==nullptr)
+	{
+		m_front=nullptr;
+		m_back=nullptr;
+		delete tempNode;
+	}
+	else if(tempNode->getPrevious()==nullptr)
+	{
+		m_back=tempNode->getNext();
+		tempNode->getNext()->setPrevious(nullptr);
+		delete tempNode;
+	}
+	else if(tempNode->getNext()==nullptr)
+	{
+		m_front=tempNode->getPrevious();
+		tempNode->getPrevious()->setNext(nullptr);
+		delete tempNode;
+	}
+	else
+	{
+		tempNode->getNext()->setPrevious(tempNode->getPrevious());
+		tempNode->getPrevious()->setNext(tempNode->getNext());
+		delete tempNode;
+	}
+
+	return true;
+}
+
+template <typename T>
+void DoubleLinkedList<T>::insertAhead(T listValue, T newValue)throw(std::runtime_error)
+{
+	Node<T>* tempNode = new Node<T>;
+	tempNode = find(listValue);
+	Node<T>* tempNode2 = new Node<T>;
+
+	if(tempNode==nullptr)
+	{
+		throw(std::runtime_error("value not in list"));
+	}
+
+	if(tempNode->getNext()==nullptr)
+	{
+		tempNode2->setValue(newValue);
+		tempNode2->setPrevious(m_front);
+		tempNode->setNext(tempNode2);
+		tempNode2->setNext(nullptr);
+		m_front=tempNode2;
+		m_size++;
+	}
+	else
+	{
+		tempNode2->setValue(newValue);
+		tempNode2->setPrevious(tempNode);
+		tempNode2->setNext(tempNode->getNext());
+		tempNode2->getPrevious()->setNext(tempNode2);
+		tempNode2->getNext()->setPrevious(tempNode2);
+		m_size++;
+	}
+}
+
+template <typename T>
+void DoubleLinkedList<T>::insertBehind(T listValue, T newValue)throw(std::runtime_error)
+{
+	Node<T>* tempNode = new Node<T>;
+	tempNode = find(listValue);
+	Node<T>* tempNode2 = new Node<T>;
+	
+	if(tempNode==nullptr)
+	{
+		throw(std::runtime_error("value not in list"));
+	}
+
+	if(tempNode->getPrevious()==nullptr)
+	{
+		tempNode2->setValue(newValue);
+		tempNode2->setNext(m_back);
+		tempNode->setPrevious(tempNode2);
+		tempNode2->setPrevious(nullptr);
+		m_back=tempNode2;
+		m_size++;
+	}
+	else
+	{
+		tempNode2->setValue(newValue);
+		tempNode2->setNext(tempNode);
+		tempNode2->setPrevious(tempNode->getPrevious());
+		tempNode2->getNext()->setPrevious(tempNode2);
+		tempNode2->getPrevious()->setNext(tempNode2);
+	}
+}
+
+template <typename T>
+Node<T>* DoubleLinkedList<T>::find(T value)const
+{
+	Node<T>* tempNode = new Node<T>;
+	tempNode = m_front;
+	while(tempNode!=nullptr)
+	{
+		if(tempNode->getValue()==value)
+		{
+			return tempNode;
+		}
+		tempNode=tempNode->getNext();
+//		tempNode=tempNode->getPrevious();
+	}
+	return nullptr;	
+}
+
+template <typename T>
+void DoubleLinkedList<T>::printList()const
+{
+	if(this->m_front==nullptr)
+	{
+		std::cout << "List Empty.";
+		return;
+	}
+	Node<T>* tempNode = new Node<T>();
+	tempNode=(this->m_front);
+	while(tempNode!=nullptr)
+	{
+		std::cout << tempNode->getValue() << ", ";
+		tempNode=(tempNode->getPrevious());
+	}
+	return;
+}

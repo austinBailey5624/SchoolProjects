@@ -1,0 +1,39 @@
+int main(int argc, char** argv)
+//argc num of arguments
+//argv args themselves
+
+./lab7
+	argc 	1
+	argv[0] "./lab7"
+
+./lab7 -sort
+	argc 	2
+	argv[0] "./Lab7"
+	argv[1] "-sort"
+
+
+Sorts<int>::sortTimer(Sorts<T>::selectionSort,arr,size)
+{
+	//start time
+
+}
+
+mergeSort(T arr[] int size)
+{
+	int mid=size/2;
+	T* left=arr;
+	T* right=arr+size/2;
+	if(size!=0 &&size!=1)
+	{
+		mergesort(left, mid);
+		mergesort(right, size-mid);
+		merge(left,right,mid,size-mid);
+	}
+	else
+	{
+		return;
+	}
+}
+
+quicksort
+choose a pivot, put the suff less than the pivot on the right, greater than on the left, call on both sides

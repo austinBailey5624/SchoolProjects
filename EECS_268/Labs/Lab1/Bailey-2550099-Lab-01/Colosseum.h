@@ -1,0 +1,51 @@
+/**
+*	@file:	Colosseum.h
+*	@author:Austin Bailey
+*	@date:	1/22/2015
+*	Purpose: Header file of Colosseum class
+*/
+
+#ifndef COLOSSEUM_H
+#define COLOSSEUM_H
+
+#include <iostream>
+#include <string>
+#include "Pokemon.h"
+#include "Dice.h"
+
+class Colosseum
+{
+public:
+	/**
+	*  @pre None
+	*  @post Creates and initializes a Colosseum instance
+	*  @return Initialzed Colosseum instance
+	*/
+	Colosseum();
+
+	/**
+	*  @pre Colosseum instance, pokemon instance
+	*  @post assigns values to the pokmeon member variables
+	*  @return void
+	*/
+	void userBuild(Pokemon& p);
+
+	/**
+	*  @pre Colosseum instance, 2 pokemon instances
+	*  @post print information concerning pokmeon's status before and after attack
+	*  @return True only if the opponent died because of the attack, else returns false
+	*/
+	bool attack(const Pokemon& attacker, Pokemon& defender);
+
+	/**
+	*  @pre Colosseum instance, 2 pokemon instances
+	*  @post outputs information about fight determines when game is over
+	*  @return void
+	*/
+	void play(Pokemon& p1, Pokemon& p2);
+private:
+	Dice d20; 	//20 sided die
+	Dice d6;	//6 sided die
+	Dice d2; 	//2 sided die
+};
+#endif

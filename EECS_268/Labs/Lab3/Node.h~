@@ -1,0 +1,54 @@
+ /**
+*	@file: 		Node.h
+*	@author:	Austin Bailey
+*	@date:		2.13.2015
+*	@purpose:	header file for node class
+*/
+#ifndef NODE_H
+#define NODE_H 
+template <typename T>
+class Node
+{
+	public:
+		/**
+		* @pre: none
+		* @post: none
+		* @return: returns an instance of Node with m_value set to T() and next and previous
+		*	set to nullptr
+		*/
+		Node();
+
+		/**
+		* @pre: instance of Node Class
+		* @post: sets m_value of instance
+		* @return: void
+		*/
+		void setValue(T value);
+
+		/**
+		* @pre: instance of Node Class
+		* @post: does not change values (const)
+		* @return: m_value
+		*/
+		T getValue()const;
+
+		/**
+		* @pre: instance of Node Class
+		* @post: sets m_next of instance
+		* @return: void
+		*/
+		void setNext(Node<T>* next);
+
+
+		Node<T>* getNext()const;
+		void setPrevious(Node<T>* previous);
+		T getPrevious()const;
+	
+	private:
+		T m_value;
+		Node<T>* m_previous;
+		Node<T>* m_next;
+
+};
+#include "Node.hpp"
+#endif

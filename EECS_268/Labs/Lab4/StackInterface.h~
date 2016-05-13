@@ -1,0 +1,30 @@
+/**
+*	@file: 		Stack.h
+*	@author:	Austin Bailey
+*	@date:		2.27.2015
+*	@purpose:	Header file for the virtual StackInterface class
+*/
+#ifndef STACKINTERFACE_H
+#define STACKINTERFACE_H 
+#include "PreconditionViolationException.h"
+template <typename T>
+class StackInterface
+{	public:
+
+		virtual ~StackInterface(){};
+		virtual bool isEmpty() const =0;
+		virtual void push(const T newEntry)=0;
+		virtual T pop() throw(PVE)=0;
+		virtual T peek() const throw(PVE)=0;
+		virtual int size() const=0;
+		virtual void print() const =0;
+		virtual bool operator< (const StackInterface<T>& rhs) const = 0;
+		virtual bool operator<=(const StackInterface<T>& rhs) const = 0;
+		virtual bool operator> (const StackInterface<T>& rhs) const = 0;
+		virtual bool operator>=(const StackInterface<T>& rhs) const = 0;
+		virtual bool operator==(const StackInterface<T>& rhs) const = 0;
+		virtual bool operator!=(const StackInterface<T>& rhs) const = 0;
+		virtual Node<T>* getTop()const=0;
+
+};
+#endif

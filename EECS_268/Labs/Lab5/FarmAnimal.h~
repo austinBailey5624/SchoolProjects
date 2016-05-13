@@ -1,0 +1,8 @@
+#ifndef FARMANIMAL_H
+#define FARMANIMAL_H
+
+class FarmAnimal
+{
+
+};
+#endif

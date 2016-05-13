@@ -1,0 +1,8 @@
+#include <stdexcept
+
+std::string msg("Unable ot insert behind..")
+
+std::runtime_error err(msg);
+throw (err);
+
+//if a method throws an exception, put it in a try 

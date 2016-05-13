@@ -1,0 +1,23 @@
+Lab9: main.o MazeReader.o MazeCreationException.o MazeWalker.o Position.o Test.o
+	g++ -Wall -std=c++11 -g main.o MazeReader.o MazeCreationException.o MazeWalker.o Position.o Test.o -o Lab9
+
+main.o: main.cpp MazeReader.cpp MazeWalker.cpp Position.cpp MazeCreationException.cpp Test.cpp
+	g++ -Wall -std=c++11 -g -c main.cpp 
+
+MazeReader.o: MazeReader.cpp
+	g++ -Wall -std=c++11 -g -c MazeReader.cpp
+
+MazeCreationException.o: MazeCreationException.cpp
+	g++ -Wall -std=c++11 -g -c MazeCreationException.cpp
+
+MazeWalker.o:MazeWalker.cpp
+	g++ -Wall -std=c++11 -g -c MazeWalker.cpp
+
+Position.o:Position.cpp
+	g++ -Wall -std=c++11 -g -c Position.cpp
+	
+Test.o:Test.cpp
+	g++ -Wall -std=c++11 -g -c Test.cpp
+
+clean:
+	rm *.o Lab9
