@@ -1,0 +1,29 @@
+Items
+	make a basic/rag version item that fills the following slots: sword, shield, hemet, armor, gauntlet, and boots
+	implement a member variable m_type that determines which items can be equipped to each slot
+	implement a member variable m_id distinct for each item
+
+Character
+	implement inventory as array of items/ints to rep
+	implement equippable items in form of slots for each item
+	need getmethods for all item slots
+	return what I have equipped in each slot
+	have base attack, def, heath
+	effective attack-my base + equipped items total
+	get methods to get final statistics
+	make member variable m_timesDied
+
+Walking around
+	World
+		2d arr of type terrain //where we move around
+	terrain
+		has m_name m_char to represent type of terrain, bool canTravel to represent if the terrain is possible?
+
+BattleInterface
+	need access to attack and defense power//like pokemon game
+	battle over gives a penalty to the player if losing, else lets you continue
+	
+
+in main
+	instantiate a world
+	

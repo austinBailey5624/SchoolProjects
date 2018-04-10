@@ -1,0 +1,3 @@
+--(CTSum t1 t2)
+g= [(x,Int)]
+check g (CInr t1 Int (Int e))

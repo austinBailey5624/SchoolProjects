@@ -1,0 +1,9 @@
+type of item with corresponding number
+0 - rags
+1 - sword
+2 - shield
+3 - armor
+4 - helmet
+5 - gauntlet
+6 - boots
+7 - potion (health)
