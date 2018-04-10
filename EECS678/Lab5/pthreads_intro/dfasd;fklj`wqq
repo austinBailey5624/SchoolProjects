@@ -1,0 +1,199 @@
+PTHREAD_MUTEX_LOCK(3P)                POSIX Programmer's Manual                PTHREAD_MUTEX_LOCK(3P)
+
+[1mPROLOG[0m
+       This  manual  page is part of the POSIX Programmer's Manual.  The Linux implementation of this
+       interface may differ (consult the corresponding Linux manual page for details of Linux  behav‐
+       ior), or the interface may not be implemented on Linux.
+
+[1mNAME[0m
+       pthread_mutex_lock, pthread_mutex_trylock, pthread_mutex_unlock — lock and unlock a mutex
+
+[1mSYNOPSIS[0m
+       #include <pthread.h>
+
+       int pthread_mutex_lock(pthread_mutex_t *[4mmutex[24m);
+       int pthread_mutex_trylock(pthread_mutex_t *[4mmutex[24m);
+       int pthread_mutex_unlock(pthread_mutex_t *[4mmutex[24m);
+
+[1mDESCRIPTION[0m
+       The  mutex  object  referenced by [4mmutex[24m shall be locked by a call to [4mpthread_mutex_lock[24m() that
+       returns zero or [1m[EOWNERDEAD][22m.  If the mutex is already locked by another thread,  the  calling
+       thread  shall  block  until  the mutex becomes available. This operation shall return with the
+       mutex object referenced by [4mmutex[24m in the locked state with the calling thread as its owner.  If
+       a  thread  attempts  to  relock a mutex that it has already locked, [4mpthread_mutex_lock[24m() shall
+       behave as described in the [1mRelock [22mcolumn of the following  table.  If  a  thread  attempts  to
+       unlock  a  mutex  that  it has not locked or a mutex which is unlocked, [4mpthread_mutex_unlock[24m()
+       shall behave as described in the [1mUnlock When Not Owner [22mcolumn of the following table.
+
+                     ┌───────────┬────────────┬────────────────┬───────────────────────┐
+                     │[1mMutex Type [22m│ [1mRobustness [22m│     [1mRelock     [22m│ [1mUnlock When Not Owner [22m│
+                     ├───────────┼────────────┼────────────────┼───────────────────────┤
+                     │NORMAL     │ non-robust │ deadlock       │ undefined behavior    │
+                     ├───────────┼────────────┼────────────────┼───────────────────────┤
+                     │NORMAL     │ robust     │ deadlock       │ error returned        │
+                     ├───────────┼────────────┼────────────────┼───────────────────────┤
+                     │ERRORCHECK │ either     │ error returned │ error returned        │
+                     ├───────────┼────────────┼────────────────┼───────────────────────┤
+                     │RECURSIVE  │ either     │ recursive      │ error returned        │
+                     │           │            │ (see below)    │                       │
+                     ├───────────┼────────────┼────────────────┼───────────────────────┤
+                     │DEFAULT    │ non-robust │ undefined      │ undefined behavior†   │
+                     │           │            │ behavior†      │                       │
+                     ├───────────┼────────────┼────────────────┼───────────────────────┤
+                     │DEFAULT    │ robust     │ undefined      │ error returned        │
+                     │           │            │ behavior†      │                       │
+                     └───────────┴────────────┴────────────────┴───────────────────────┘
+       †     If the mutex type is PTHREAD_MUTEX_DEFAULT, the  behavior  of  [4mpthread_mutex_lock[24m()  may
+             correspond  to  one  of  the  three other standard mutex types as described in the table
+             above. If it does not correspond to one of those three, the behavior  is  undefined  for
+             the cases marked †.
+
+       Where  the  table indicates recursive behavior, the mutex shall maintain the concept of a lock
+       count. When a thread successfully acquires a mutex for the first time, the lock count shall be
+       set  to  one.  Every  time a thread relocks this mutex, the lock count shall be incremented by
+       one. Each time the thread unlocks the mutex, the lock count shall be decremented by one.  When
+       the lock count reaches zero, the mutex shall become available for other threads to acquire.
+
+       The  [4mpthread_mutex_trylock[24m() function shall be equivalent to [4mpthread_mutex_lock[24m(), except that
+       if the mutex object referenced by [4mmutex[24m is currently locked (by any thread, including the cur‐
+       rent  thread), the call shall return immediately. If the mutex type is PTHREAD_MUTEX_RECURSIVE
+       and the mutex is currently owned by the calling thread, the mutex lock count shall  be  incre‐
+       mented by one and the [4mpthread_mutex_trylock[24m() function shall immediately return success.
+
+       The  [4mpthread_mutex_unlock[24m()  function shall release the mutex object referenced by [4mmutex[24m.  The
+       manner in which a mutex is released is dependent upon the mutex's type attribute. If there are
+       threads blocked on the mutex object referenced by [4mmutex[24m when [4mpthread_mutex_unlock[24m() is called,
+       resulting in the mutex becoming available, the scheduling policy shall determine which  thread
+       shall acquire the mutex.
+
+       (In  the  case  of  PTHREAD_MUTEX_RECURSIVE mutexes, the mutex shall become available when the
+       count reaches zero and the calling thread no longer has any locks on this mutex.)
+
+       If a signal is delivered to a thread waiting for a mutex, upon return from the signal  handler
+       the thread shall resume waiting for the mutex as if it was not interrupted.
+
+       If [4mmutex[24m is a robust mutex and the process containing the owning thread terminated while hold‐
+       ing the mutex lock, a call to [4mpthread_mutex_lock[24m() shall return the error value  [1m[EOWNERDEAD][22m.
+       If  [4mmutex[24m  is  a robust mutex and the owning thread terminated while holding the mutex lock, a
+       call to [4mpthread_mutex_lock[24m() may return the error value [1m[EOWNERDEAD] [22meven if  the  process  in
+       which the owning thread resides has not terminated. In these cases, the mutex is locked by the
+       thread but the state it protects is marked as inconsistent. The application should ensure that
+       the  state  is  made consistent for reuse and when that is complete call [4mpthread_mutex_consis‐[0m
+       [4mtent[24m().  If the application is unable to recover the state, it should unlock the mutex without
+       a  prior call to [4mpthread_mutex_consistent[24m(), after which the mutex is marked permanently unus‐
+       able.
+
+       If [4mmutex[24m does not refer to an initialized mutex object, the behavior of  [4mpthread_mutex_lock[24m(),
+       [4mpthread_mutex_trylock[24m(), and [4mpthread_mutex_unlock[24m() is undefined.
+
+[1mRETURN VALUE[0m
+       If  successful,  the [4mpthread_mutex_lock[24m(), [4mpthread_mutex_trylock[24m(), and [4mpthread_mutex_unlock[24m()
+       functions shall return zero; otherwise, an error number shall  be  returned  to  indicate  the
+       error.
+
+[1mERRORS[0m
+       The [4mpthread_mutex_lock[24m() and [4mpthread_mutex_trylock[24m() functions shall fail if:
+
+       [1mEAGAIN [22mThe mutex could not be acquired because the maximum number of recursive locks for [4mmutex[0m
+              has been exceeded.
+
+       [1mEINVAL [22mThe [4mmutex[24m was created with the protocol attribute having the value PTHREAD_PRIO_PROTECT
+              and the calling thread's priority is higher than the mutex's current priority ceiling.
+
+       [1mENOTRECOVERABLE[0m
+              The state protected by the mutex is not recoverable.
+
+       [1mEOWNERDEAD[0m
+              The  mutex is a robust mutex and the process containing the previous owning thread ter‐
+              minated while holding the mutex lock. The mutex lock shall be acquired by  the  calling
+              thread and it is up to the new owner to make the state consistent.
+
+       The [4mpthread_mutex_lock[24m() function shall fail if:
+
+       [1mEDEADLK[0m
+              The  mutex  type  is  PTHREAD_MUTEX_ERRORCHECK  and the current thread already owns the
+              mutex.
+
+       The [4mpthread_mutex_trylock[24m() function shall fail if:
+
+       [1mEBUSY  [22mThe [4mmutex[24m could not be acquired because it was already locked.
+
+       The [4mpthread_mutex_unlock[24m() function shall fail if:
+
+       [1mEPERM  [22mThe mutex type is PTHREAD_MUTEX_ERRORCHECK or PTHREAD_MUTEX_RECURSIVE, or the mutex  is
+              a robust mutex, and the current thread does not own the mutex.
+
+       The [4mpthread_mutex_lock[24m() and [4mpthread_mutex_trylock[24m() functions may fail if:
+
+       [1mEOWNERDEAD[0m
+              The mutex is a robust mutex and the previous owning thread terminated while holding the
+              mutex lock. The mutex lock shall be acquired by the calling thread and it is up to  the
+              new owner to make the state consistent.
+
+       The [4mpthread_mutex_lock[24m() function may fail if:
+
+       [1mEDEADLK[0m
+              A deadlock condition was detected.
+
+       These functions shall not return an error code of [1m[EINTR][22m.
+
+       [4mThe[24m [4mfollowing[24m [4msections[24m [4mare[24m [4minformative.[0m
+
+[1mEXAMPLES[0m
+       None.
+
+[1mAPPLICATION USAGE[0m
+       Applications  that  have assumed that non-zero return values are errors will need updating for
+       use with robust mutexes, since a valid return for a thread acquiring a mutex which is protect‐
+       ing  a currently inconsistent state is [1m[EOWNERDEAD][22m.  Applications that do not check the error
+       returns, due to ruling out the possibility of such  errors  arising,  should  not  use  robust
+       mutexes.  If an application is supposed to work with normal and robust mutexes it should check
+       all return values for error conditions and if necessary take appropriate action.
+
+[1mRATIONALE[0m
+       Mutex objects are intended to serve as a low-level primitive from which other thread  synchro‐
+       nization functions can be built. As such, the implementation of mutexes should be as efficient
+       as possible, and this has ramifications on the features available at the interface.
+
+       The mutex functions and the particular default settings of  the  mutex  attributes  have  been
+       motivated  by  the  desire  to not preclude fast, inlined implementations of mutex locking and
+       unlocking.
+
+       Since most attributes only need to be checked when a thread is going to be blocked, the use of
+       attributes does not slow the (common) mutex-locking case.
+
+       Likewise,  while  being  able to extract the thread ID of the owner of a mutex might be desir‐
+       able, it would require storing the current thread ID when each mutex is locked, and this could
+       incur unacceptable levels of overhead. Similar arguments apply to a [4mmutex_tryunlock[24m operation.
+
+       For  further  rationale on the extended mutex types, see the Rationale (Informative) volume of
+       POSIX.1‐2008, [4mThreads[24m [4mExtensions[24m.
+
+       If an implementation detects that the value specified by the [4mmutex[24m argument does not refer  to
+       an  initialized  mutex  object,  it is recommended that the function should fail and report an
+       [1m[EINVAL] [22merror.
+
+[1mFUTURE DIRECTIONS[0m
+       None.
+
+[1mSEE ALSO[0m
+       [4mpthread_mutex_consistent[24m(), [4mpthread_mutex_destroy[24m(), [4mpthread_mutex_timedlock[24m(), [4mpthread_mutex‐[0m
+       [4mattr_getrobust[24m()
+
+       The Base Definitions volume of POSIX.1‐2008, [4mSection[24m [4m4.11[24m, [4mMemory[24m [4mSynchronization[24m, [1m<pthread.h>[0m
+
+[1mCOPYRIGHT[0m
+       Portions  of  this  text are reprinted and reproduced in electronic form from IEEE Std 1003.1,
+       2013 Edition, Standard for Information  Technology  --  Portable  Operating  System  Interface
+       (POSIX),  The  Open  Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of
+       Electrical and Electronics Engineers, Inc and The Open Group.  (This is POSIX.1-2008 with  the
+       2013  Technical  Corrigendum  1 applied.) In the event of any discrepancy between this version
+       and the original IEEE and The Open Group Standard, the original IEEE and The Open Group  Stan‐
+       dard   is   the   referee   document.   The  original  Standard  can  be  obtained  online  at
+       http://www.unix.org/online.html .
+
+       Any typographical or formatting errors that appear in this page are most likely to  have  been
+       introduced  during  the  conversion  of  the  source  files to man page format. To report such
+       errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .
+
+IEEE/The Open Group                              2013                          PTHREAD_MUTEX_LOCK(3P)

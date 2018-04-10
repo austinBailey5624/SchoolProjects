@@ -1,0 +1,104 @@
+SIGSETOPS(3)               Linux Programmer's Manual              SIGSETOPS(3)
+
+[1mNAME[0m
+       sigemptyset, sigfillset, sigaddset, sigdelset, sigismember - POSIX sig‐
+       nal set operations
+
+[1mSYNOPSIS[0m
+       [1m#include <signal.h>[0m
+
+       [1mint sigemptyset(sigset_t *[4m[22mset[24m[1m);[0m
+
+       [1mint sigfillset(sigset_t *[4m[22mset[24m[1m);[0m
+
+       [1mint sigaddset(sigset_t *[4m[22mset[24m[1m, int [4m[22msignum[24m[1m);[0m
+
+       [1mint sigdelset(sigset_t *[4m[22mset[24m[1m, int [4m[22msignum[24m[1m);[0m
+
+       [1mint sigismember(const sigset_t *[4m[22mset[24m[1m, int [4m[22msignum[24m[1m);[0m
+
+   Feature Test Macro Requirements for glibc (see [1mfeature_test_macros[22m(7)):
+
+       [1msigemptyset[22m(), [1msigfillset[22m(), [1msigaddset[22m(), [1msigdelset[22m(), [1msigismember[22m():
+           _POSIX_C_SOURCE
+
+[1mDESCRIPTION[0m
+       These functions allow the manipulation of POSIX signal sets.
+
+       [1msigemptyset[22m() initializes the signal set given by [4mset[24m  to  empty,  with
+       all signals excluded from the set.
+
+       [1msigfillset[22m() initializes [4mset[24m to full, including all signals.
+
+       [1msigaddset[22m()  and  [1msigdelset[22m() add and delete respectively signal [4msignum[0m
+       from [4mset[24m.
+
+       [1msigismember[22m() tests whether [4msignum[24m is a member of [4mset[24m.
+
+       Objects of type [4msigset_t[24m must  be  initialized  by  a  call  to  either
+       [1msigemptyset[22m()  or  [1msigfillset[22m()  before  being  passed to the functions
+       [1msigaddset[22m(), [1msigdelset[22m() and  [1msigismember[22m()  or  the  additional  glibc
+       functions  described  below  ([1msigisemptyset[22m(),  [1msigandset[22m(),  and  [1msig‐[0m
+       [1morset[22m()).  The results are undefined if this is not done.
+
+[1mRETURN VALUE[0m
+       [1msigemptyset[22m(), [1msigfillset[22m(), [1msigaddset[22m(), and [1msigdelset[22m() return  0  on
+       success and -1 on error.
+
+       [1msigismember[22m()  returns  1  if [4msignum[24m is a member of [4mset[24m, 0 if [4msignum[24m is
+       not a member, and -1 on error.
+
+       On error, these functions set [4merrno[24m to indicate the cause of the error.
+
+[1mERRORS[0m
+       [1mEINVAL [4m[22msig[24m is not a valid signal.
+
+[1mATTRIBUTES[0m
+       For  an  explanation  of  the  terms  used   in   this   section,   see
+       [1mattributes[22m(7).
+
+       ┌────────────────────────────────┬───────────────┬─────────┐
+       │[1mInterface                       [22m│ [1mAttribute     [22m│ [1mValue   [22m│
+       ├────────────────────────────────┼───────────────┼─────────┤
+       │[1msigemptyset[22m(), [1msigfillset[22m(),    │ Thread safety │ MT-Safe │
+       │[1msigaddset[22m(), [1msigdelset[22m(),       │               │         │
+       │[1msigismember[22m(), [1msigisemptyset[22m(), │               │         │
+       │[1msigorset[22m(), [1msigandset[22m()         │               │         │
+       └────────────────────────────────┴───────────────┴─────────┘
+[1mCONFORMING TO[0m
+       POSIX.1-2001, POSIX.1-2008.
+
+[1mNOTES[0m
+       When creating a filled signal set, the glibc [1msigfillset[22m() function does
+       not include the two real-time  signals  used  internally  by  the  NPTL
+       threading implementation.  See [1mnptl[22m(7) for details.
+
+   [1mGlibc extensions[0m
+       If  the  [1m_GNU_SOURCE  [22mfeature  test  macro  is defined, then [4m<signal.h>[0m
+       exposes three other functions for manipulating signal sets:
+
+       [1mint sigisemptyset(const sigset_t *[4m[22mset[24m[1m);[0m
+       [1mint sigorset(sigset_t *[4m[22mdest[24m[1m, const sigset_t *[4m[22mleft[24m[1m,[0m
+                     [1mconst sigset_t *[4m[22mright[24m[1m);[0m
+       [1mint sigandset(sigset_t *[4m[22mdest[24m[1m, const sigset_t *[4m[22mleft[24m[1m,[0m
+                     [1mconst sigset_t *[4m[22mright[24m[1m);[0m
+
+       [1msigisemptyset[22m() returns 1 if [4mset[24m contains no signals, and 0 otherwise.
+
+       [1msigorset[22m() places the union  of  the  sets  [4mleft[24m  and  [4mright[24m  in  [4mdest[24m.
+       [1msigandset[22m() places the intersection of the sets [4mleft[24m and [4mright[24m in [4mdest[24m.
+       Both functions return 0 on success, and -1 on failure.
+
+       These functions are nonstandard (a few other  systems  provide  similar
+       functions) and their use should be avoided in portable applications.
+
+[1mSEE ALSO[0m
+       [1msigaction[22m(2), [1msigpending[22m(2), [1msigprocmask[22m(2), [1msigsuspend[22m(2)
+
+[1mCOLOPHON[0m
+       This  page  is  part of release 4.06 of the Linux [4mman-pages[24m project.  A
+       description of the project, information about reporting bugs,  and  the
+       latest     version     of     this    page,    can    be    found    at
+       https://www.kernel.org/doc/man-pages/.
+
+Linux                             2016-03-15                      SIGSETOPS(3)
