@@ -106,22 +106,6 @@ data CFBAE where
   deriving (Show,Eq)
 
 elabCFBAE :: CFBAE -> CFAE
---elabCFBAE (Num' x) = return (evalDynCFAE (Num x));
---elabCFBAE (Num' x) = (Num x)
---elabCFBAE (Plus' (Num' l) (Num' r)) = (Plus (Num l) (Num r))--(Num l)--(Plus l r)
---elabCFBAE (Minus' (Num' l) (Num' r)) = (Minus (Num l) (Num r))
---elabCFBAE (Lambda' l (Num' r)) = (Lambda l (Num r))
---elabCFBAE (App' (Num' r) (Num' l)) = (App (Num r) (Num l))
-
-
---elabCFBAE (Plus' l r) = (evalDynCFAE [] (Plus l r))
---elabCFBAE (Plus' l r) = (Plus l r)
---elabCFBAE (Minus' l r) = (Minus l r)
---elabCFBAE (Lambda' l r) = (Lambda l r)
---elabCFBAE (App' l r) = (App l r)
---elabCFBAE (Bind' i v b) = (App (Lambda i b) v)
---elabCFBAE (Id' i) = (Id i)
---elabCFBAE (If0' c t e) = (If0 c t e)
 elabCFBAE (Num' x) = (Num x)
 elabCFBAE (Plus' l r) = (Plus (elabCFBAE l) (elabCFBAE r))
 elabCFBAE (Minus' l r) = (Minus (elabCFBAE l) (elabCFBAE r))
@@ -134,17 +118,7 @@ elabCFBAE (If0' c t e) = (If0 (elabCFBAE c) (elabCFBAE t) (elabCFBAE e))
 
 evalCFBAE :: Env' -> CFBAE -> (Maybe CFAEValue)
 evalCFBAE e (Num' x) = return (NumV x)
---evalCFBAE e (Plus' l r) = elabCFBAE (Plus' (evalCFBAE e l) (evalCFBAE e r) )
---evalCFBAE e (Plus' l r) = do{
---    l2 <- evalCFBAE e l;
---    r2 <- evalCFBAE e r;
---    return elabCFBAE (Plus' l2 r2)
---}
 evalCFBAE e (Plus' l r) = (evalStatCFAE e (elabCFBAE (Plus' l r)))
---    l2 <- evalCFBAE e l;
---    r2 <- evalCFBAE e r;
---    l2 <- evalStatCFAE e l;
---    r2 <- evalStatCFAE e r;
 evalCFBAE e (Minus' l r) = (evalStatCFAE e (elabCFBAE (Minus' l r)))
 evalCFBAE e (Lambda' i b) = (evalStatCFAE e (elabCFBAE (Lambda' i b) ))
 evalCFBAE e (App' f a) = (evalStatCFAE e (elabCFBAE (App' f a)))
@@ -154,25 +128,3 @@ evalCFBAE e (If0' c t e2) = (evalStatCFAE e (elabCFBAE (If0' c t e2)))
 
 
 --evalCFBAE _ _ = Nothing
-
-subst :: String -> CFAE -> CFAE -> CFAE
-
-subst i v (Num x) = (Num x)
-
-subst i v (Plus l r) =
-    (Plus (subst i v l) (subst i v r))
-
-subst i v (Minus l r) =
-    (Minus (subst i v l) (subst i v r))
-
-subst i v (Lambda i2 b) =
-      (Lambda i2 (subst i v b))
---    (Lambda (subst i v i2) (subst i v b))
-
-subst i v (App f a) =
-    (App (subst i v f) (subst i v a))
-
-subst i v (Id x) = if(i==x) then v else (Id x)
-
-
-subst i v (If0 c t e) = If0 (subst i v c) (subst i v t) (subst i v e)
